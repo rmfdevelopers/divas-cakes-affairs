@@ -2,24 +2,32 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --primary: #2D0A0A;
+  --secondary: #4A1010;
+  --accent: #D4AF37;
+}
+
 html { scroll-behavior: smooth; }
 body { 
   overflow-x: hidden; 
-  font-family: var(--font-body); 
-  background-color: #FFF8E1;
-  color: #8B4513;
+  background: var(--primary);
+  color: white;
+  font-family: var(--font-body);
 }
-h1,h2,h3,h4 { font-family: var(--font-heading); }
+
+h1, h2, h3, h4 { font-family: var(--font-heading); }
 
 .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 
-@keyframes fadeIn       { from { opacity: 0; }           to { opacity: 1; } }
-@keyframes slideUp      { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes scaleIn      { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-@keyframes float        { 0%,100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-20px) rotate(5deg); } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes scaleIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
 
-.animate-fadeIn   { animation: fadeIn 0.8s ease-out forwards; }
-.animate-slideUp  { animation: slideUp 0.8s ease-out forwards; }
-.animate-scaleIn  { animation: scaleIn 0.6s ease-out forwards; }
-.animate-float    { animation: float 6s ease-in-out infinite; }
+.animate-fadeIn { animation: fadeIn 1s ease-out forwards; }
+.animate-slideUp { animation: slideUp 0.8s ease-out forwards; }
+.animate-float { animation: float 6s ease-in-out infinite; }
+.animate-scaleIn { animation: scaleIn 0.6s ease-out forwards; }

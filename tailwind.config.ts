@@ -6,15 +6,19 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      colors: {
-        primary: "#8B4513",
-        secondary: "#FFF8E1",
-        accent: "#C04000",
-      },
       fontFamily: {
-        sans: ["var(--font-body)"],
-        heading: ["var(--font-heading)"],
+        heading: ['var(--font-heading)'],
+        sans: ['var(--font-body)'],
       },
+      colors: {
+        primary: "#2D0A0A",
+        secondary: "#4A1010",
+        accent: "#D4AF37",
+      },
+      transitionProperty: {
+        'height': 'height',
+        'spacing': 'margin, padding',
+      }
     },
   },
   plugins: [],
