@@ -3,277 +3,328 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { 
-  Menu, X, Instagram, Mail, Phone, MapPin, 
-  Leaf, Timer, ChefHat, Cake, Smile, ImageOff, CheckCheck 
+  Menu, 
+  X, 
+  Instagram, 
+  Mail, 
+  MapPin, 
+  Phone, 
+  CheckCheck, 
+  ImageOff, 
+  Cake, 
+  Users, 
+  Timer, 
+  Award, 
+  Leaf, 
+  ChefHat, 
+  ShoppingBag,
+  ArrowRight
 } from 'lucide-react';
 
-// --- DATA ---
+const IMAGES = {
+  hero: "https://images.unsplash.com/photo-1685029965146-f6feff153a71?q=80&w=1080",
+  products: [
+    "https://images.unsplash.com/photo-1772985199408-01f6cb7e2c42?q=80&w=1080",
+    "https://images.unsplash.com/photo-1772986565105-a3b7833d19bf?q=80&w=1080",
+    "https://images.unsplash.com/photo-1772985430801-01b17dbdf1f5?q=80&w=1080",
+    "https://images.unsplash.com/photo-1772986511163-58d3eef073b1?q=80&w=1080"
+  ],
+  decor: "https://images.unsplash.com/photo-1772985199460-d2a118f48341?q=80&w=1080"
+};
+
 const brand = {
   name: "Diva's Cakes Affairs",
-  tagline: "Where Every Celebration Deserves A Masterpiece.",
-  description: "Bespoke, artisanal cakes for weddings, birthdays, and all significant milestones. Hand-crafted using the finest ingredients to deliver unforgettable taste and stunning visual design.",
-  industry: "Boutique Cakery",
-  region: "Nigeria",
+  tagline: "Exquisite Cakes for Your Most Precious Moments",
+  description: "Lagos' premier destination for bespoke luxury cakes. We specialize in handcrafted masterpieces that combine artisanal flavors with breathtaking designs.",
+  industry: "Boutique Bakery",
   currency: "₦"
 };
 
-const IMAGES = {
-  hero: "https://images.unsplash.com/photo-1631857455684-a54a2f03665f?q=80&w=1600",
-  about: "https://images.unsplash.com/photo-1631998878375-236a6826ce7f?q=80&w=1200",
-  products: [
-    "https://images.unsplash.com/photo-1609737930633-73ce90feff1a?q=80&w=1000",
-    "https://images.unsplash.com/photo-1661560276847-7764d698843d?q=80&w=1000",
-    "https://images.unsplash.com/photo-1605563432942-0f863d9df42e?q=80&w=1000",
-    "https://images.unsplash.com/photo-1676734626918-b0663902259f?q=80&w=1000"
-  ]
+const contact = {
+  instagram: "divascake_affairs",
+  address: "Lagos, Nigeria",
+  whatsapp: ""
 };
 
 const products = [
-  { name: "Velvet Dream Tier Cake", description: "A rich, deep red velvet cake layered with our signature cream cheese frosting.", price: "₦28,000" },
-  { name: "Chocoholic Extravaganza", description: "Six layers of dark chocolate sponge, filled with ganache and topped with glossy drips.", price: "₦35,500" },
-  { name: "Wedding Splendor", description: "Custom-designed, multi-tiered vanilla sponge with floral buttercream artistry.", price: "₦150,000" },
-  { name: "Small Bites Box", description: "A box of 12 artisanal cupcakes and mini-pastries for corporate events.", price: "₦9,500" }
+  { name: "Signature Red Velvet", price: "₦15,500", description: "Moist, velvety layers paired with our secret recipe cream cheese frosting." },
+  { name: "Chocolate Overload", price: "₦18,000", description: "Rich Belgian chocolate sponge layered with decadent dark chocolate ganache." },
+  { name: "Gourmet Cupcake Box", price: "₦12,000", description: "A dozen assorted cupcakes featuring our most popular seasonal flavors." },
+  { name: "Bespoke Celebration Cake", price: "₦45,000", description: "Custom-designed multi-tier cakes tailored to your specific event theme." }
 ];
 
 const features = [
-  { title: "Fresh Ingredients", description: "We source the freshest local and imported ingredients for unmatched flavor.", icon: Leaf },
-  { title: "Sharp Delivery", description: "Reliable, temperature-controlled delivery across Lagos state. No stories.", icon: Timer },
-  { title: "Chef's Special", description: "Rotating monthly specialty flavors designed by our head pastry chef.", icon: ChefHat }
+  { title: "Fresh Ingredients", description: "We use only the finest butter, cream, and organic flavors in every batch.", icon: Leaf },
+  { title: "Lagos Delivery on Lock", description: "Swift and safe delivery to your doorstep across the Mainland and Island.", icon: Timer },
+  { title: "Custom Artistry", description: "Every cake is a unique piece of art designed specifically for your story.", icon: ChefHat }
 ];
 
 const testimonials = [
-  { name: "Tunde M.", text: "The design was flawless and the taste? Absolute fire! Diva's nailed my husband's birthday theme.", role: "Lagos Client" },
-  { name: "Seyi K.", text: "Best red velvet I've had in Nigeria, period. The packaging for delivery was top-notch.", role: "Event Planner" },
-  { name: "Jasmine O.", text: "So vibrant and exactly what I asked for. Zero stress from order to delivery.", role: "Customer" }
+  { name: "Tolu Adebayo", text: "The Red Velvet was absolutely divine! Best cake I've ordered in Lagos so far.", role: "Birthday Client" },
+  { name: "Chinelo Okechukwu", text: "Diva's made our wedding cake exactly how we pictured it. It was the star of the night!", role: "Bride" },
+  { name: "Funke Johnson", text: "Incredibly moist and not too sweet. Perfect balance of flavors every single time.", role: "Repeat Customer" }
 ];
-
-// --- COMPONENTS ---
 
 function SafeImage({ src, alt, fill, width, height, className, priority }: any) {
   const [error, setError] = useState(false);
   if (error) {
     return (
-      <div className={`flex items-center justify-center bg-zinc-900 ${className}`}>
-        <ImageOff size={28} className="text-white/20" />
+      <div className={`flex items-center justify-center bg-secondary/20 ${className}`}>
+        <ImageOff size={24} className="text-white/20" />
       </div>
     );
   }
   return (
     <Image 
-      src={src} alt={alt} fill={fill} 
-      width={!fill ? (width ?? 800) : undefined} 
-      height={!fill ? (height ?? 600) : undefined} 
-      className={className} priority={priority} 
-      onError={() => setError(true)} 
+      src={src} alt={alt} fill={fill} width={!fill ? width : undefined} height={!fill ? height : undefined} 
+      className={className} priority={priority} onError={() => setError(true)} 
     />
   );
 }
 
-const useScrollReveal = (threshold = 0.15) => {
+const useScrollReveal = (threshold = 0.1) => {
   const ref = useRef<any>(null);
   const [isVisible, setIsVisible] = useState(false);
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) setIsVisible(true); },
-      { threshold }
-    );
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) setIsVisible(true);
+    }, { threshold });
     if (ref.current) observer.observe(ref.current);
     return () => observer.disconnect();
-  }, []);
+  }, [threshold]);
   return { ref, isVisible };
 };
 
-const Nav = () => {
-  const [scrolled, setScrolled] = useState(false);
-  const [open, setOpen] = useState(false);
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 60);
-    window.addEventListener('scroll', onScroll);
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
-  return (
-    <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${scrolled ? 'bg-primary py-4 shadow-2xl' : 'bg-transparent py-6'}`}>
-      <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
-        <a href="#home" className="text-2xl font-black tracking-tighter text-accent flex items-center gap-2">
-          <Cake className="animate-float" />
-          DIVA&apos;S CAKES
-        </a>
-        
-        <div className="hidden md:flex items-center gap-8">
-          {['Home', 'Menu', 'About', 'Contact'].map(link => (
-            <a key={link} href={`#${link.toLowerCase()}`} className="text-white font-bold text-sm hover:text-accent transition-colors">
-              {link}
-            </a>
-          ))}
-          <a href="#contact" className="bg-accent text-secondary px-6 py-2 rounded-full font-black text-sm hover:scale-105 transition-transform">
-            ORDER NOW
-          </a>
-        </div>
-
-        <button className="md:hidden text-white" onClick={() => setOpen(true)}>
-          <Menu size={28} />
-        </button>
-      </div>
-
-      {/* Mobile Sidebar */}
-      <div className={`fixed inset-0 bg-primary z-50 transition-transform duration-500 ${open ? 'translate-x-0' : 'translate-x-full'}`}>
-        <div className="p-8 flex flex-col h-full">
-          <div className="flex justify-between items-center mb-16">
-            <span className="text-accent font-black text-xl">DIVA&apos;S</span>
-            <button onClick={() => setOpen(false)}><X size={32} className="text-white" /></button>
-          </div>
-          <div className="flex flex-col gap-8">
-            {['Home', 'Menu', 'About', 'Contact'].map(link => (
-              <a key={link} href={`#${link.toLowerCase()}`} onClick={() => setOpen(false)} className="text-4xl font-black text-white italic">
-                {link}
-              </a>
-            ))}
-          </div>
-          <div className="mt-auto flex gap-6">
-            <Instagram className="text-accent" />
-            <Mail className="text-accent" />
-          </div>
-        </div>
-      </div>
-    </nav>
-  );
-};
-
 export default function Site() {
-  const heroReveal = useScrollReveal();
-  const featuresReveal = useScrollReveal();
-  const productsReveal = useScrollReveal();
-  const aboutReveal = useScrollReveal();
-  const testimonialsReveal = useScrollReveal();
-  const contactReveal = useScrollReveal();
-
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' });
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 50);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const handleForm = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => { setLoading(false); setSent(true); }, 1000);
+    setTimeout(() => { setLoading(false); setSent(true); }, 1200);
   };
 
+  const revealHero = useScrollReveal();
+  const revealFeatures = useScrollReveal();
+  const revealProducts = useScrollReveal();
+  const revealAbout = useScrollReveal();
+  const revealTestimonials = useScrollReveal();
+  const revealContact = useScrollReveal();
+
   return (
-    <main className="overflow-x-hidden">
-      <Nav />
-
-      {/* HERO SECTION */}
-      <section id="home" className="min-h-screen relative flex items-end pb-24 px-6 md:px-16 overflow-hidden bg-primary">
-        <SafeImage src={IMAGES.hero} alt="Showcase Cake" fill className="object-cover opacity-60" priority />
-        <div className="absolute inset-0 bg-gradient-to-t from-secondary via-secondary/40 to-transparent" />
-        <div className="relative z-10 max-w-4xl">
-          <div className={`transition-all duration-1000 ${heroReveal.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`} ref={heroReveal.ref}>
-            <h1 className="text-6xl md:text-[9rem] font-black text-white leading-[0.85] tracking-tighter italic">
-              YOUR NEXT <br /> <span className="text-accent">CRAVING</span> STARTS HERE.
-            </h1>
-            <p className="text-white/80 mt-8 text-lg max-w-xl leading-relaxed font-medium">
-              The fun, bold, and delicious world of Diva&apos;s Cakes is now online. Browse our portfolio and let&apos;s start designing your dream cake.
-            </p>
-            <div className="flex gap-4 mt-12 flex-wrap">
-              <a href="#products" className="bg-accent text-secondary px-10 py-5 font-black text-lg rounded-full hover:brightness-110 transition-all hover:scale-105">
-                SEE THE MENU 🔥
-              </a>
-              <a href="#contact" className="border-2 border-white text-white px-10 py-5 font-black text-lg rounded-full hover:bg-white hover:text-primary transition-all">
-                ENQUIRE
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* FEATURES SECTION (ICON GRID) */}
-      <section id="features" ref={featuresReveal.ref} className="py-28 px-6 bg-primary">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-5xl font-black text-white italic">The Diva Difference</h2>
-            <p className="text-secondary font-bold text-lg mt-2">Why Choose Us For Your Next Big Moment?</p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {features.map((f, i) => {
-              const Icon = f.icon;
-              return (
-                <div key={i} 
-                  style={{ transitionDelay: `${i * 150}ms` }}
-                  className={`p-10 rounded-3xl bg-secondary border-4 border-accent transition-all duration-700 ${featuresReveal.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-                  <div className="w-16 h-16 rounded-2xl bg-accent flex items-center justify-center mb-8 rotate-3 shadow-xl">
-                    <Icon size={32} className="text-secondary" />
-                  </div>
-                  <h3 className="text-3xl font-black text-white mb-4">{f.title}</h3>
-                  <p className="text-white/70 leading-relaxed">{f.description}</p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* PRODUCTS SECTION (ASYMMETRIC) */}
-      <section id="products" ref={productsReveal.ref} className="py-28 px-6 bg-secondary">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row items-end justify-between mb-20 gap-8">
-            <h2 className="text-6xl md:text-8xl font-black text-primary leading-none italic">OUR SWEET <br /> CREATIONS</h2>
-            <p className="text-white/40 max-w-xs text-left md:text-right font-medium">From Classic Flavors to Bold New Designs. Handcrafted for you.</p>
+    <main className="relative">
+      {/* Navigation */}
+      <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? 'bg-primary/95 backdrop-blur-lg shadow-xl py-4' : 'bg-transparent py-6'}`}>
+        <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
+          <div className="flex items-center gap-2 group cursor-pointer">
+            <div className="w-10 h-10 bg-accent text-primary flex items-center justify-center rounded-lg font-black text-xl group-hover:rotate-12 transition-transform">D</div>
+            <span className="font-heading text-2xl font-black tracking-tighter text-white uppercase">Diva&apos;s</span>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
-            {/* Featured Product */}
-            <div className={`md:col-span-7 group relative rounded-[3rem] overflow-hidden transition-all duration-1000 ${productsReveal.isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
-              <div className="relative h-[600px]">
-                <SafeImage src={IMAGES.products[0]} alt={products[0].name} fill className="object-cover group-hover:scale-110 transition-transform duration-1000 opacity-80" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
-                <div className="absolute bottom-0 p-12 w-full">
-                  <span className="text-accent font-black text-2xl mb-4 block">{products[0].price}</span>
-                  <h3 className="text-4xl md:text-6xl font-black text-white">{products[0].name}</h3>
-                  <p className="text-white/60 mt-4 max-w-md">{products[0].description}</p>
-                </div>
+          <div className="hidden md:flex items-center gap-10">
+            {['Home', 'Menu', 'About', 'Contact'].map((link) => (
+              <a key={link} href={`#${link.toLowerCase()}`} className="text-white/80 hover:text-accent font-medium text-sm tracking-widest uppercase transition-colors">{link}</a>
+            ))}
+            <a href="#contact" className="bg-accent text-primary px-6 py-2.5 rounded-full font-bold text-sm hover:scale-105 transition-transform">Order Now</a>
+          </div>
+
+          <button className="md:hidden text-white" onClick={() => setIsMenuOpen(true)}>
+            <Menu size={28} />
+          </button>
+        </div>
+      </nav>
+
+      {/* Mobile Sidebar */}
+      <div className={`fixed inset-0 z-[60] transition-transform duration-500 ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+        <div className="absolute inset-0 bg-black/40" onClick={() => setIsMenuOpen(false)} />
+        <div className="absolute right-0 top-0 h-full w-[80%] bg-primary shadow-2xl p-8 flex flex-col">
+          <button className="self-end text-white mb-12" onClick={() => setIsMenuOpen(false)}><X size={32} /></button>
+          <div className="flex flex-col gap-8">
+            {['Home', 'Menu', 'About', 'Contact'].map((link) => (
+              <a key={link} href={`#${link.toLowerCase()}`} onClick={() => setIsMenuOpen(false)} className="text-4xl font-heading font-black text-white uppercase">{link}</a>
+            ))}
+          </div>
+          <div className="mt-auto pt-10 border-t border-white/10">
+            <p className="text-accent font-bold mb-4">Follow the sweetness</p>
+            <a href={`https://instagram.com/${contact.instagram}`} className="flex items-center gap-3 text-white/60">
+              <Instagram size={20} /> @{contact.instagram}
+            </a>
+          </div>
+        </div>
+      </div>
+
+      {/* Hero Section - Pattern HR-B */}
+      <section id="home" className="min-h-screen relative flex items-end pb-24 px-6 md:px-16 overflow-hidden">
+        <SafeImage src={IMAGES.hero} alt="Luxury Cake Hero" fill className="object-cover" priority />
+        <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/40 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/60 to-transparent" />
+        
+        <div ref={revealHero.ref} className={`relative z-10 max-w-4xl transition-all duration-1000 ${revealHero.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}>
+          <h1 className="font-heading text-6xl md:text-9xl font-black text-white leading-[0.85] tracking-tighter uppercase">
+            Cakes That <br />Tell <span className="text-accent">Your Story</span>
+          </h1>
+          <p className="text-white/80 mt-8 text-xl max-w-xl leading-relaxed font-light">
+            {brand.description} Handcrafted luxury delivered fresh across Lagos.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-5 mt-12">
+            <a href="#contact" className="bg-accent text-primary px-10 py-5 font-black text-lg rounded-full flex items-center justify-center gap-3 hover:brightness-110 transition-all">
+              Order on Instagram <Instagram size={20} />
+            </a>
+            <a href="#menu" className="bg-white/10 backdrop-blur-md border border-white/20 text-white px-10 py-5 font-bold text-lg rounded-full flex items-center justify-center hover:bg-white/20 transition-all">
+              Explore Menu
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* Divider - D-GRID */}
+      <div className="py-12 border-y border-white/5 bg-secondary/5">
+        <div className="max-w-7xl mx-auto flex flex-wrap justify-center gap-10 opacity-40">
+          {['Bespoke', 'Artisanal', 'Lagos Premier', 'Luxury', 'Handcrafted'].map((word, i) => (
+            <div key={i} className="flex items-center gap-3 text-sm font-heading tracking-[0.3em] uppercase">
+              <div className="w-1.5 h-1.5 rounded-full bg-accent" />
+              {word}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Features Section - F-BENTO */}
+      <section id="features" ref={revealFeatures.ref} className="py-32 px-6 bg-primary">
+        <div className="max-w-7xl mx-auto">
+          <div className={`mb-16 transition-all duration-700 ${revealFeatures.isVisible ? 'opacity-100' : 'opacity-0 translate-y-8'}`}>
+            <h2 className="font-heading text-5xl md:text-7xl font-black text-white uppercase leading-none">The Diva&apos;s <br /><span className="text-accent">Touch</span></h2>
+            <p className="text-white/50 mt-4 text-lg">Why our clients keep coming back for more.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className={`md:col-span-2 bg-accent/10 rounded-3xl p-10 border border-accent/20 flex flex-col justify-between group min-h-[340px] transition-all duration-700 delay-100 ${revealFeatures.isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
+              <div className="w-16 h-16 rounded-2xl bg-accent text-primary flex items-center justify-center group-hover:rotate-6 transition-transform">
+                <ChefHat size={32} />
+              </div>
+              <div>
+                <h3 className="font-heading text-4xl font-black text-white uppercase">{features[2].title}</h3>
+                <p className="text-white/60 mt-3 text-lg leading-relaxed max-w-md">{features[2].description}</p>
               </div>
             </div>
 
-            {/* Side Column */}
-            <div className="md:col-span-5 grid grid-rows-2 gap-8">
-              {products.slice(1, 3).map((p, i) => (
-                <div key={i} className={`group relative rounded-[2rem] overflow-hidden bg-primary transition-all duration-1000 delay-300 ${productsReveal.isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12'}`}>
-                  <div className="relative h-full min-h-[250px]">
-                    <SafeImage src={IMAGES.products[i+1]} alt={p.name} fill className="object-cover group-hover:scale-105 transition-transform duration-700 opacity-50" />
-                    <div className="absolute inset-0 bg-secondary/20" />
-                    <div className="absolute inset-0 p-8 flex flex-col justify-end">
-                      <span className="text-accent font-black text-xl">{p.price}</span>
-                      <h3 className="text-2xl font-black text-white mt-1">{p.name}</h3>
-                      <a href="#contact" className="text-white/60 font-bold text-xs mt-2 uppercase tracking-widest hover:text-accent transition-colors">Order Detail →</a>
-                    </div>
-                  </div>
+            {features.slice(0, 2).map((f, i) => (
+              <div key={i} className={`bg-white/5 rounded-3xl p-8 border border-white/10 flex flex-col justify-between min-h-[340px] hover:bg-white/10 transition-all duration-500 transition-all duration-700 ${revealFeatures.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`} style={{ transitionDelay: `${i * 200 + 300}ms` }}>
+                <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-accent">
+                  <f.icon size={24} />
                 </div>
-              ))}
+                <div>
+                  <h3 className="font-heading text-2xl font-black text-white uppercase">{f.title}</h3>
+                  <p className="text-white/40 mt-2 text-sm leading-relaxed">{f.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Products Section - P-STAGGER */}
+      <section id="menu" ref={revealProducts.ref} className="py-32 px-6 bg-secondary/5 overflow-hidden">
+        <div className="max-w-7xl mx-auto mb-24 text-center">
+          <h2 className={`font-heading text-6xl md:text-8xl font-black text-white uppercase leading-tight transition-all duration-700 ${revealProducts.isVisible ? 'opacity-100' : 'opacity-0 translate-y-8'}`}>Our <span className="text-accent">Best Sellers</span></h2>
+        </div>
+
+        <div className="max-w-7xl mx-auto space-y-32">
+          {products.map((p, i) => (
+            <div key={i} className={`flex flex-col ${i % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'} items-center gap-12 md:gap-24`}>
+              <div className={`w-full md:w-1/2 relative transition-all duration-1000 ${revealProducts.isVisible ? 'opacity-100 translate-x-0' : i % 2 === 0 ? 'opacity-0 -translate-x-20' : 'opacity-0 translate-x-20'}`}>
+                <div className="aspect-[4/5] relative rounded-[2.5rem] overflow-hidden shadow-2xl group">
+                  <SafeImage src={IMAGES.products[i]} alt={p.name} fill className="object-cover group-hover:scale-110 transition-transform duration-700" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent" />
+                </div>
+                <div className={`absolute -bottom-10 ${i % 2 === 0 ? '-right-10' : '-left-10'} w-2/3 h-2/3 bg-accent/10 rounded-[2.5rem] -z-10 blur-3xl`} />
+              </div>
+
+              <div className={`w-full md:w-1/2 ${i % 2 === 0 ? 'text-left' : 'md:text-right'} transition-all duration-1000 delay-300 ${revealProducts.isVisible ? 'opacity-100' : 'opacity-0'}`}>
+                <span className="font-heading text-accent text-lg font-bold tracking-[0.3em] uppercase mb-4 block">Flavor 0{i + 1}</span>
+                <h3 className="font-heading text-5xl md:text-7xl font-black text-white leading-none uppercase">{p.name}</h3>
+                <p className="text-white/60 mt-6 text-xl leading-relaxed">{p.description}</p>
+                <div className="mt-10 flex flex-col gap-6 items-start md:items-inherit">
+                  <span className="text-5xl font-black text-white font-heading">{p.price}</span>
+                  <a href="#contact" className="bg-accent text-primary px-10 py-4 rounded-full font-black text-lg hover:shadow-[0_0_30px_rgba(255,215,0,0.3)] transition-all flex items-center gap-3">
+                    Place Order <ShoppingBag size={20} />
+                  </a>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* About Section - Asymmetric Split */}
+      <section id="about" ref={revealAbout.ref} className="py-32 bg-primary overflow-hidden relative">
+        <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-20 items-center">
+          <div className={`transition-all duration-1000 ${revealAbout.isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-20'}`}>
+            <h2 className="font-heading text-6xl md:text-8xl font-black text-white uppercase leading-none mb-10">Inside <br />The <span className="text-accent">Bakery</span></h2>
+            <p className="text-white/70 text-xl leading-relaxed mb-8">
+              Diva&apos;s Cakes Affairs began with a simple mission: to bring joy to Lagos through the art of baking. 
+              What started in a home kitchen has grown into a trusted name for weddings, birthdays, and corporate events.
+            </p>
+            <p className="text-white/50 text-lg italic mb-12">
+              Lagos delivery on lock—from Ikeja to Lekki, we ensure your centerpiece arrives in pristine condition.
+            </p>
+            
+            <div className="grid grid-cols-2 gap-8 border-t border-white/10 pt-10">
+              <div>
+                <p className="font-heading text-5xl font-black text-accent leading-none">2,000+</p>
+                <p className="text-white/40 text-xs uppercase tracking-[0.3em] mt-3">Cakes Delivered</p>
+              </div>
+              <div>
+                <p className="font-heading text-5xl font-black text-accent leading-none">1,500+</p>
+                <p className="text-white/40 text-xs uppercase tracking-[0.3em] mt-3">Happy Clients</p>
+              </div>
+            </div>
+          </div>
+
+          <div className={`relative h-[600px] rounded-[3rem] overflow-hidden transition-all duration-1000 delay-300 ${revealAbout.isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-20'}`}>
+            <SafeImage src={IMAGES.decor} alt="Bakery Interior Decor" fill className="object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-tr from-primary/60 via-transparent to-transparent" />
+            <div className="absolute bottom-10 left-10 right-10 p-8 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl">
+              <p className="text-white font-medium text-lg">&ldquo;We don&apos;t just bake cakes; we create edible memories that last a lifetime.&rdquo;</p>
+              <p className="text-accent font-heading text-sm uppercase tracking-widest mt-4">— The Diva Team</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* TESTIMONIALS (AUTO-SLIDER) */}
-      <section id="testimonials" ref={testimonialsReveal.ref} className="py-28 bg-primary overflow-hidden border-y-8 border-accent">
-        <div className="max-w-7xl mx-auto px-6 mb-16 text-center">
-          <h2 className="text-6xl font-black text-secondary italic">LOVED BY DIVAS</h2>
+      {/* Testimonials - T-SLIDER */}
+      <section ref={revealTestimonials.ref} className="py-32 bg-secondary/5 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6 mb-16">
+          <h2 className="font-heading text-5xl md:text-7xl font-black text-white uppercase text-center">Sweet <span className="text-accent">Words</span></h2>
         </div>
+        
         <div className="w-full overflow-hidden">
-          <div className="flex w-[200%] gap-6 animate-slide-left hover:[animation-play-state:paused]">
-            {[...testimonials, ...testimonials, ...testimonials].map((t, i) => (
-              <div key={i} className="w-[380px] shrink-0 bg-secondary border-4 border-white rounded-[2rem] p-10 flex flex-col">
-                <div className="flex gap-2 mb-6">
-                  {[1,2,3,4,5].map(n => <div key={n} className="w-3 h-3 rounded-full bg-accent" />)}
+          <div className="flex w-[200%] gap-6 animate-slide-left hover:[animation-play-state:paused] px-6">
+            {[...testimonials, ...testimonials].map((t, i) => (
+              <div key={i} className="w-80 md:w-[450px] shrink-0 bg-white/5 border border-white/10 rounded-[2rem] p-10 flex flex-col justify-between">
+                <div>
+                  <div className="flex gap-2 mb-8">
+                    {[1, 2, 3, 4, 5].map(n => <div key={n} className="w-2 h-2 rounded-full bg-accent" />)}
+                  </div>
+                  <p className="text-white/80 text-xl leading-relaxed font-light italic">&ldquo;{t.text}&rdquo;</p>
                 </div>
-                <p className="text-white text-lg font-medium italic mb-10">&ldquo;{t.text}&rdquo;</p>
-                <div className="mt-auto flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center font-black text-white border-2 border-accent">
+                <div className="flex items-center gap-4 mt-10 pt-8 border-t border-white/10">
+                  <div className="w-12 h-12 rounded-full bg-accent text-primary flex items-center justify-center font-black">
                     {t.name.charAt(0)}
                   </div>
                   <div>
-                    <p className="font-black text-accent">{t.name}</p>
-                    <p className="text-white/40 text-xs font-bold uppercase">{t.role}</p>
+                    <p className="font-bold text-white uppercase tracking-wider">{t.name}</p>
+                    <p className="text-white/40 text-xs uppercase tracking-widest">{t.role}</p>
                   </div>
                 </div>
               </div>
@@ -282,89 +333,74 @@ export default function Site() {
         </div>
       </section>
 
-      {/* ABOUT SECTION */}
-      <section id="about" ref={aboutReveal.ref} className="py-28 px-6 bg-secondary relative">
-        <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-20 items-center">
-          <div className={`transition-all duration-1000 ${aboutReveal.isVisible ? 'opacity-100 -translate-x-0' : 'opacity-0 -translate-x-12'}`}>
-            <h2 className="text-6xl font-black text-primary leading-none mb-8 italic">FROM INSTAGRAM <br /> TO YOUR TABLE</h2>
-            <p className="text-white/60 text-lg leading-relaxed mb-10">
-              Diva&apos;s Cakes Affairs started as a passion project shared exclusively on Instagram, growing through word-of-mouth based on pure quality and creativity. We are dedicated to bringing that viral energy to your real-life celebrations. This website is the next step in serving our growing community better.
-            </p>
-            <div className="grid grid-cols-2 gap-10">
-              {[
-                { n: "500+", l: "Cakes Sold", i: Cake },
-                { n: "98%", l: "Happy Divas", i: Smile }
-              ].map((s, idx) => (
-                <div key={idx} className="flex flex-col">
-                  <s.i className="text-accent mb-3" size={32} />
-                  <span className="text-4xl font-black text-white">{s.n}</span>
-                  <span className="text-white/40 text-sm font-bold uppercase tracking-widest">{s.l}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className={`relative aspect-square transition-all duration-1000 delay-300 ${aboutReveal.isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12'}`}>
-            <div className="absolute -top-4 -left-4 w-full h-full bg-primary rounded-[3rem] -rotate-3" />
-            <div className="relative w-full h-full overflow-hidden rounded-[3rem] shadow-2xl">
-              <SafeImage src={IMAGES.about} alt="The Bakery" fill className="object-cover" />
-            </div>
-            <div className="absolute -bottom-8 -right-8 w-40 h-40 bg-accent rounded-full flex items-center justify-center animate-float">
-              <ChefHat size={60} className="text-secondary" />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CONTACT SECTION (C4 Variant) */}
-      <section id="contact" ref={contactReveal.ref} className="py-28 px-6 bg-accent min-h-[80vh] flex items-center">
-        <div className="max-w-7xl mx-auto w-full">
-          <div className={`transition-all duration-1000 ${contactReveal.isVisible ? 'opacity-100 skew-y-0' : 'opacity-0 skew-y-3'}`}>
-            <h2 className="text-[12vw] md:text-[8vw] font-black text-secondary leading-none mb-16 italic text-center md:text-left">
-              READY TO ORDER YOUR SHOWSTOPPER?
-            </h2>
-          </div>
+      {/* Contact Section - C4 */}
+      <section id="contact" ref={revealContact.ref} className="py-32 px-6 bg-accent">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="font-heading text-[12vw] md:text-[8vw] font-black text-primary leading-none mb-12 uppercase tracking-tighter">
+            Ready to <br />Celebrate?
+          </h2>
           
-          <div className="grid md:grid-cols-[1fr_1.5fr] gap-12 items-start pt-12 border-t-4 border-secondary/20">
-            <div className="space-y-8">
-              <p className="text-secondary/80 font-bold text-xl max-w-sm italic">
-                Let&apos;s make your next celebration a masterpiece. Fill the form or reach out directly.
-              </p>
-              <div className="space-y-4">
-                <a href="https://instagram.com/divascake_affairs" className="flex items-center gap-4 text-secondary font-black text-lg hover:translate-x-2 transition-transform">
-                  <Instagram size={24} /> @divascake_affairs
-                </a>
-                <div className="flex items-center gap-4 text-secondary font-black text-lg opacity-40 italic">
-                  <Mail size={24} /> Email Coming Soon
+          <div className="grid lg:grid-cols-[1fr_1.5fr] gap-16 items-start border-t-4 border-primary/20 pt-16">
+            <div className="space-y-10">
+              <div>
+                <h4 className="font-heading text-primary text-2xl font-black uppercase mb-4">Visit Us</h4>
+                <div className="flex items-center gap-4 text-primary/80 font-medium">
+                  <MapPin size={24} /> <span>{contact.address}</span>
                 </div>
+              </div>
+              <div>
+                <h4 className="font-heading text-primary text-2xl font-black uppercase mb-4">Say Hello</h4>
+                <a href={`https://instagram.com/${contact.instagram}`} className="flex items-center gap-4 text-primary hover:translate-x-2 transition-transform font-bold text-xl">
+                  <Instagram size={24} /> @{contact.instagram}
+                </a>
+              </div>
+              <div className="pt-8">
+                <div className="w-20 h-2 bg-primary/20" />
+                <p className="text-primary/60 mt-4 text-sm font-medium uppercase tracking-[0.2em]">Crafting Joy Daily</p>
               </div>
             </div>
 
-            <div className="bg-secondary p-10 md:p-14 rounded-[3rem] shadow-2xl relative overflow-hidden group">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl group-hover:bg-primary/20 transition-all" />
-              
+            <div className="bg-primary rounded-[2.5rem] p-8 md:p-12 shadow-2xl">
               {sent ? (
-                <div className="flex flex-col items-center justify-center py-16 text-center animate-scaleIn">
-                  <div className="w-20 h-20 rounded-full bg-accent flex items-center justify-center mb-8 rotate-12">
-                    <CheckCheck size={40} className="text-secondary" />
+                <div className="py-16 text-center animate-scaleIn">
+                  <div className="w-20 h-20 rounded-full bg-accent/20 flex items-center justify-center mx-auto mb-8 border border-accent/30">
+                    <CheckCheck size={40} className="text-accent" />
                   </div>
-                  <h3 className="text-4xl font-black text-white italic mb-4">Message Received!</h3>
-                  <p className="text-white/60 font-medium">We&apos;ll get back to you sharp sharp!</p>
+                  <h3 className="font-heading text-4xl font-black text-white uppercase">Sweet!</h3>
+                  <p className="text-white/50 mt-4 text-lg">Your request is received. We&apos;ll get back to you shortly.</p>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <input type="text" placeholder="Your Name" required
-                      className="w-full bg-white/5 border-2 border-white/10 rounded-2xl px-6 py-5 text-white placeholder-white/20 outline-none focus:border-accent transition-all" />
-                    <input type="email" placeholder="Email Address" required
-                      className="w-full bg-white/5 border-2 border-white/10 rounded-2xl px-6 py-5 text-white placeholder-white/20 outline-none focus:border-accent transition-all" />
+                <form onSubmit={handleForm} className="space-y-6">
+                  <div className="grid md:grid-cols-2 gap-6">
+                    {(['name', 'email'] as const).map(field => (
+                      <div key={field}>
+                        <label className="block text-white/40 text-xs uppercase tracking-widest mb-2 font-bold">{field}</label>
+                        <input 
+                          type={field === 'email' ? 'email' : 'text'}
+                          value={form[field]}
+                          onChange={e => setForm(prev => ({ ...prev, [field]: e.target.value }))}
+                          required
+                          className="w-full bg-white/5 border border-white/10 rounded-xl px-6 py-4 text-white outline-none focus:border-accent transition-all"
+                        />
+                      </div>
+                    ))}
                   </div>
-                  <input type="text" placeholder="Phone (WhatsApp Preferred)" required
-                    className="w-full bg-white/5 border-2 border-white/10 rounded-2xl px-6 py-5 text-white placeholder-white/20 outline-none focus:border-accent transition-all" />
-                  <textarea rows={4} placeholder="Tell us about your cake (Date, Theme, Flavors...)" required
-                    className="w-full bg-white/5 border-2 border-white/10 rounded-2xl px-6 py-5 text-white placeholder-white/20 outline-none focus:border-accent transition-all resize-none" />
-                  <button type="submit" disabled={loading}
-                    className="w-full bg-accent text-secondary py-6 rounded-2xl font-black text-xl hover:brightness-110 transition-all hover:scale-[1.02] disabled:opacity-50">
-                    {loading ? 'SENDING...' : 'SEND INQUIRY'}
+                  <div>
+                    <label className="block text-white/40 text-xs uppercase tracking-widest mb-2 font-bold">Your Celebration Details</label>
+                    <textarea 
+                      rows={4}
+                      value={form.message}
+                      onChange={e => setForm(prev => ({ ...prev, message: e.target.value }))}
+                      required
+                      placeholder="Event type, date, and your dream cake details..."
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-6 py-4 text-white outline-none focus:border-accent transition-all resize-none"
+                    />
+                  </div>
+                  <button 
+                    disabled={loading}
+                    className="w-full bg-accent text-primary py-5 rounded-xl font-black text-xl uppercase tracking-widest hover:brightness-110 transition-all disabled:opacity-50"
+                  >
+                    {loading ? 'Sending Request...' : 'Send Message'}
                   </button>
                 </form>
               )}
@@ -373,27 +409,33 @@ export default function Site() {
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer className="bg-secondary py-20 px-6 border-t-2 border-white/5">
+      {/* Footer */}
+      <footer className="py-20 bg-primary border-t border-white/5 px-6">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-12">
           <div className="text-center md:text-left">
-            <h2 className="text-4xl font-black text-primary italic mb-2">DIVA&apos;S CAKES</h2>
-            <p className="text-white/30 text-sm font-medium tracking-widest">{brand.tagline}</p>
+            <div className="flex items-center justify-center md:justify-start gap-2 mb-4">
+              <div className="w-8 h-8 bg-accent text-primary flex items-center justify-center rounded font-black">D</div>
+              <span className="font-heading text-xl font-black uppercase tracking-tighter">Diva&apos;s Cakes</span>
+            </div>
+            <p className="text-white/40 text-sm max-w-xs leading-relaxed">
+              Exquisite cakes for your most precious moments. Lagos premier bespoke bakery.
+            </p>
           </div>
-          
-          <div className="flex gap-10">
-            {['Instagram', 'WhatsApp'].map(social => (
-              <a key={social} href="#" className="text-white/40 font-bold hover:text-accent transition-colors uppercase tracking-widest text-sm">
-                {social}
+
+          <div className="flex gap-8">
+            <a href={`https://instagram.com/${contact.instagram}`} className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center text-white/40 hover:text-accent hover:border-accent transition-all">
+              <Instagram size={20} />
+            </a>
+            {contact.whatsapp && (
+              <a href={`https://wa.me/${contact.whatsapp}`} className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center text-white/40 hover:text-accent hover:border-accent transition-all">
+                <Phone size={20} />
               </a>
-            ))}
+            )}
           </div>
 
           <div className="text-center md:text-right">
-            <p className="text-white/20 text-xs font-bold uppercase tracking-widest mb-2">Lagos, Nigeria</p>
-            <p className="text-white/40 text-xs font-bold uppercase tracking-widest">
-              &copy; {new Date().getFullYear()} Diva&apos;s Cakes Affairs. All Rights Reserved.
-            </p>
+            <p className="text-white/40 text-xs uppercase tracking-[0.2em]">© {new Date().getFullYear()} Diva&apos;s Cakes Affairs</p>
+            <p className="text-white/20 text-[10px] mt-2 uppercase tracking-widest">Handcrafted in Lagos, Nigeria</p>
           </div>
         </div>
       </footer>

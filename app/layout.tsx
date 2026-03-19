@@ -1,15 +1,20 @@
-import { Oswald, Sora } from 'next/font/google';
-import './globals.css';
+import type { Metadata } from "next";
+import { Oswald, Sora } from "next/font/google";
+import "./globals.css";
 
-const heading = Oswald({ subsets: ['latin'], variable: '--font-heading' });
-const body = Sora({ subsets: ['latin'], variable: '--font-body' });
+const heading = Oswald({ subsets: ["latin"], variable: "--font-heading" });
+const body = Sora({ subsets: ["latin"], variable: "--font-body" });
 
-export const metadata = {
-  title: "Diva's Cakes Affairs | Artisanal Masterpieces",
-  description: "Bespoke, artisanal cakes for weddings, birthdays, and all significant milestones.",
+export const metadata: Metadata = {
+  title: "Diva's Cakes Affairs | Bespoke Luxury Cakes Lagos",
+  description: "Lagos' premier destination for handcrafted masterpieces and artisanal flavors.",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en">
       <body className={`${heading.variable} ${body.variable} font-sans`}>
